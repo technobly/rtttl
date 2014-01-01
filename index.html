@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <style>
+    body {
+      background-color: #666666;
+      margin: 0;
+      padding: 0;
+      color: #666666;
+      background-image: url("images/dgrey076.jpg");
+      overflow-y: scroll;
+    } 
+    button {
+      border:3px solid #666666;
+      padding:10px 10px; 
+      background:#bb0000;
+      background-image:url("images/rickbutton.png");
+      width:400px;
+      height:600px;
+      border-radius:40px;
+      outline: none;
+    }
+    .buttons {
+      display: block;
+      margin: 0 auto;
+      margin-top: 10px;
+      text-align: center;
+    }
+  </style>
+    <title>Remote RTTTL for the Spark Core</title>
+  </head>
+  <body>
+    <div class="buttons">
+      <button type="button" id="button-1"></button>
+    </div>
+
+    <script type="text/javascript" src="http://codeorigin.jquery.com/jquery-2.0.3.min.js"></script>
+    <script>
+      $(document).ready(function() {
+        var baseURL = "https://api.spark.io/v1/devices/";
+        //--------------------------------------------------------------
+        // START - EDITABLE USER DATA
+        //
+        var accessToken = "0123456789012345678901234567890123456789";
+        var coreID = "01234567890134567890123";
+        var funcKey1 = "remote";
+        var args1 = "";
+        //
+        // END - EDITABLE USER DATA
+        //-------------------------------------------------------------- 
+
+        // The base level run method command
+        function doMethod(method, data) {
+          var url = baseURL + coreID + "/" + method;
+          $.ajax({
+            type: "POST",
+            url: url,
+            data: {
+              access_token: accessToken,
+              args: data
+            },
+            dataType: "json"
+          }).success(function(obj) {
+            if(obj.return_value && obj.return_value == 200) console.log("Success!");
+          }).fail(function(obj) {
+            console.log("Failed: "+obj);
+          });
+        }
+
+        $("#button-1").on("click", function () {
+          doMethod(funcKey1, args1);
+        });
+
+      });
+    </script>           
+  </body>
+</html>
