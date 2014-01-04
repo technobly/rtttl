@@ -241,9 +241,9 @@ bool next_rtttl() {
 
 void tone(int pin, int16_t note, int16_t duration) {
   for(int16_t x=0;x<(duration*1000/note);x++) {
-    PIN_MAP[tonePin].gpio_peripheral->BSRR = PIN_MAP[tonePin].gpio_pin; // HIGH
+    PIN_MAP[pin].gpio_peripheral->BSRR = PIN_MAP[pin].gpio_pin; // HIGH
     delayMicroseconds(note);
-    PIN_MAP[tonePin].gpio_peripheral->BRR = PIN_MAP[tonePin].gpio_pin;  // LOW
+    PIN_MAP[pin].gpio_peripheral->BRR = PIN_MAP[pin].gpio_pin;  // LOW
     delayMicroseconds(note);
   }
 }
