@@ -54,9 +54,12 @@ int notes[] =
 //char *song = (char *)"SMBwater:d=8,o=6,b=225:4d5,4e5,4f#5,4g5,4a5,4a#5,b5,b5,b5,p,b5,p,2b5,p,g5,2e.,2d#.,2e.,p,g5,a5,b5,c,d,2e.,2d#,4f,2e.,2p,p,g5,2d.,2c#.,2d.,p,g5,a5,b5,c,c#,2d.,2g5,4f,2e.,2p,p,g5,2g.,2g.,2g.,4g,4a,p,g,2f.,2f.,2f.,4f,4g,p,f,2e.,4a5,4b5,4f,e,e,4e.,b5,2c.";
 //char *song = (char *)"SMBdeath:d=4,o=5,b=90:32c6,32c6,32c6,8p,16b,16f6,16p,16f6,16f.6,16e.6,16d6,16c6,16p,16e,16p,16c"; 
 char *song = (char *)"RickRoll:d=4,o=5,b=200:8g,8a,8c6,8a,e6,8p,e6,8p,d6.,p,8p,8g,8a,8c6,8a,d6,8p,d6,8p,c6,8b,a.,8g,8a,8c6,8a,2c6,d6,b,a,g.,8p,g,2d6,2c6.,p,8g,8a,8c6,8a,e6,8p,e6,8p,d6.,p,8p,8g,8a,8c6,8a,2g6,b,c6.,8b,a,8g,8a,8c6,8a,2c6,d6,b,a,g.,8p,g,2d6,2c6.";
+//char *song = (char *)"2.34kHzBeeps:d=4,o=7,b=240:d,p,d,p,d,p,d,p";
+
 
 byte default_dur = 4;
 byte default_oct = 6;
+byte lowest_oct = 3;
 int bpm = 63;
 int num;
 long wholenote;
@@ -214,11 +217,11 @@ bool next_rtttl() {
         Serial1.print("Playing: ");
         Serial1.print(scale, 10); Serial1.print(' ');
         Serial1.print(note, 10); Serial1.print(" (");
-        Serial1.print(notes[(scale - 4) * 12 + note], 10);
+        Serial1.print(notes[(scale - lowest_oct) * 12 + note], 10);
         Serial1.print(") ");
         Serial1.println(duration, 10);
       }
-      tone(tonePin, notes[(scale - 4) * 12 + note], duration);
+      tone(tonePin, notes[(scale - lowest_oct) * 12 + note], duration);
       //noTone(tonePin);
     }
     else
