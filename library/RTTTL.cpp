@@ -3,7 +3,7 @@
 // A fun program for the Spark Core that works without the use of the tone() function
 // Originally written by Brett Hagman (http://roguerobotics.com),
 // Reworked by Technobly (http://technobly.com) for the Spark Core.
-// Converted into a class by (http://zv.sg) for Spark Core
+// Converted into a class by Chee Zhiquan(http://zv.sg) for Spark Core. Added play, pause, stop functions
 //
 // This plays RTTTL (RingTone Text Transfer Language) songs
 // by bit-banging a selected digital output.
