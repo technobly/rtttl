@@ -59,6 +59,8 @@ void loop(void)
 
     midi.cycle(); //uninterrupted
 
+    //by using millis, the song will be playing without any interruption so that the user can pause at any time of the program
+
     if(currentMillis - previousMillis > interval) {
         previousMillis = currentMillis;
         //every 1 sec
