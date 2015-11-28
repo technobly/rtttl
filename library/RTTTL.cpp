@@ -23,7 +23,6 @@ bool songDone = false;
 //rtttl vars
 byte default_dur = 4;
 byte default_oct = 6;
-byte lowest_oct = 3;
 int bpm = 63;
 int num;
 long wholenote;
@@ -32,14 +31,15 @@ byte note;
 byte scale;
 char *songPtr;
 
+float extra_pause = 1.4; // to distinguish the notes better by increasing the pause
+
 //notes vars
-int notes[] =
-{0,
-3817,3597,3401,3205,3030,2857,2703,2551,2404,2273,2146,2024,
-1908,1805,1701,1608,1515,1433,1351,1276,1205,1136,1073,1012,
-956,903,852,804,759,716,676,638,602,568,536,506,
-478,451,426,402,379,358,338,319,301,284,268,253,
-239,226,213,201,190,179,169,159,151,142,134,127};
+int notes[] = { 0,
+262, 277, 294, 311, 330, 349, 370, 392, 415, 440, 466, 494,
+523, 554, 587, 622, 659, 698, 740, 784, 831, 880, 932, 988,
+1047, 1109, 1175, 1245, 1319, 1397, 1480, 1568, 1661, 1760, 1865, 1976,
+2093, 2217, 2349, 2489, 2637, 2794, 2960, 3136, 3322, 3520, 3729, 3951
+};
 
 RTTTL::RTTTL(int16_t tonePin, char* song) {
     _tonePin = tonePin;
@@ -101,8 +101,6 @@ void RTTTL::begin_rtttl(char *p)
     p++;                   // skip comma
   }
 
-  if(DEBUG) { Serial1.print("ddur: "); Serial1.println(default_dur, 10); }
-
   // get default octave
   if(*p == 'o')
   {
@@ -111,8 +109,6 @@ void RTTTL::begin_rtttl(char *p)
     if(num >= 3 && num <=7) default_oct = num;
     p++;                   // skip comma
   }
-
-  if(DEBUG) { Serial1.print("doct: "); Serial1.println(default_oct, 10); }
 
   // get BPM
   if(*p == 'b')
@@ -127,12 +123,8 @@ void RTTTL::begin_rtttl(char *p)
     p++;                   // skip colon
   }
 
-  if(DEBUG) { Serial1.print("bpm: "); Serial1.println(bpm, 10); }
-
   // BPM usually expresses the number of quarter notes per minute
   wholenote = (60 * 1000L / bpm) * 2;  // this is the time for whole note (in milliseconds)
-
-  if(DEBUG) { Serial1.print("wn: "); Serial1.println(wholenote, 10); }
 
   // Save current song pointer...
   songPtr = p;
@@ -222,37 +214,17 @@ bool RTTTL::next_rtttl() {
     // now play the note
     if(note)
     {
-      if(DEBUG) {
-        Serial1.print("Playing: ");
-        Serial1.print(scale, 10); Serial1.print(' ');
-        Serial1.print(note, 10); Serial1.print(" (");
-        Serial1.print(notes[(scale - lowest_oct) * 12 + note], 10);
-        Serial1.print(") ");
-        Serial1.println(duration, 10);
-      }
-      RTTTL::tone(_tonePin, notes[(scale - lowest_oct) * 12 + note], duration);
-      //noTone(tonePin);
+      tone(_tonePin, notes[(scale - 4) * 12 + note]);
+      delay(duration * extra_pause);
+      noTone(_tonePin);
     }
     else
     {
-      if(DEBUG) {
-        Serial1.print("Pausing: ");
-        Serial1.println(duration, 10);
-      }
-      delay(duration);
+      delay(duration * extra_pause);
     }
     return 1; // note played successfully.
   }
   else {
     return 0; // all done
-  }
-}
-
-void RTTTL::tone(int pin, int16_t note, int16_t duration) {
-  for(int16_t x=0;x<(duration*1000/note);x++) {
-    PIN_MAP[pin].gpio_peripheral->BSRR = PIN_MAP[pin].gpio_pin; // HIGH
-    delayMicroseconds(note);
-    PIN_MAP[pin].gpio_peripheral->BRR = PIN_MAP[pin].gpio_pin;  // LOW
-    delayMicroseconds(note);
   }
 }
