@@ -21,8 +21,14 @@ http://code.google.com/p/rogue-code/wiki/ToneLibraryDocumentation or just search
 particle compile photon examples/demo1/demo1.cpp src/RTTTL.cpp src/RTTTL.h --target 3.3.1 --saveTo play.bin; particle usb dfu; particle flash --usb play.bin
 ```
 
-### Full featured player takes new song requests via Particle function or publish
+### Full featured player takes new song requests via Particle function or publish, plays several songs in a loop on boot
 
 ```
 particle compile photon examples/demo2/demo2.cpp src/RTTTL.cpp src/RTTTL.h --target 3.3.1 --saveTo play.bin; particle usb dfu; particle flash --usb play.bin
+```
+
+### Full featured player takes new song requests via Particle function or publish, does not play anything on boot
+
+```
+particle compile photon examples/demo3/demo3.cpp src/RTTTL.cpp src/RTTTL.h --target 3.3.1 --saveTo play.bin; particle usb dfu; particle flash --usb play.bin
 ```

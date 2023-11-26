@@ -67,7 +67,9 @@ void RTTTL::init(void) {
     // _volume         = 127;
     _songPlaying    = false;
     _songDone       = false;
-    parseHeader(_song);
+    if (*_song) {
+        parseHeader(_song);
+    }
 }
 
 void RTTTL::pause(void) {
@@ -77,11 +79,15 @@ void RTTTL::pause(void) {
 void RTTTL::stop(void) {
     _songPlaying = false;
     _songDone = false;
-    parseHeader(_song); // rewind song
+    if (*_song) {
+        parseHeader(_song); // rewind song
+    }
 }
 
 void RTTTL::play(void) {
-    _songPlaying = true;
+    if (*_song) {
+        _songPlaying = true;
+    }
 }
 
 bool RTTTL::isSongDone(void) {
@@ -98,8 +104,8 @@ bool RTTTL::isPlaying(void) {
 
 bool RTTTL::process(void) {
     bool rv = false;
-    if(_songPlaying) {
-        if(!nextNote()) {
+    if (_songPlaying) {
+        if (!nextNote()) {
             _songDone    = true;
             _songPlaying = false;
         } else {
@@ -116,30 +122,30 @@ void RTTTL::parseHeader(char *p)
 
     // format: d=N,o=N,b=NNN:
     // find the start (skip name, etc)
-    while(*p != ':') p++;    // ignore name
-    p++;                     // skip ':'
+    while (*p != ':') p++;    // ignore name
+    p++;                      // skip ':'
 
     // get default duration
-    if(*p == 'd')
+    if (*p == 'd')
     {
         p++; p++;              // skip "d="
         _num = 0;
-        while(isdigit(*p))
+        while (isdigit(*p))
         {
           _num = (_num * 10) + (*p++ - '0');
         }
-        if(_num > 0) {
+        if (_num > 0) {
             _default_dur = _num;
         }
         p++;                   // skip comma
     }
 
     // get default octave
-    if(*p == 'o')
+    if (*p == 'o')
     {
         p++; p++;              // skip "o="
         _num = *p++ - '0';
-        if(_num >= 1 && _num <=7) {
+        if (_num >= 1 && _num <=7) {
             _default_oct = _num;
         }
         p++;                   // skip comma
@@ -147,11 +153,11 @@ void RTTTL::parseHeader(char *p)
 
     // get higher octave offset
     // not originally part of the RTTTL spec, added for convenience
-    if(*p == 'h')
+    if (*p == 'h')
     {
         p++; p++;              // skip "h="
         _num = *p++ - '0';
-        if(_num >= 1 && _num <=7) {
+        if (_num >= 1 && _num <=7) {
             _higher_offset = _num;
         }
         p++;                   // skip comma
@@ -159,22 +165,22 @@ void RTTTL::parseHeader(char *p)
 
     // get lower octave offset
     // not originally part of the RTTTL spec, added for convenience
-    if(*p == 'l')
+    if (*p == 'l')
     {
         p++; p++;              // skip "l="
         _num = *p++ - '0';
-        if(_num >= 1 && _num <=7) {
-            _lower_offset = _num;
+        if (_num >= 1 && _num <=7) {
+             _lower_offset = _num;
         }
         p++;                   // skip comma
     }
 
     // get BPM
-    if(*p == 'b')
+    if (*p == 'b')
     {
         p++; p++;              // skip "b="
         _num = 0;
-        while(isdigit(*p))
+        while (isdigit(*p))
         {
             _num = (_num * 10) + (*p++ - '0');
         }
@@ -183,11 +189,11 @@ void RTTTL::parseHeader(char *p)
     }
 
     // get VOL
-    if(*p == 'v')
+    if (*p == 'v')
     {
         p++; p++;              // skip "v="
         _num = 0;
-        while(isdigit(*p))
+        while (isdigit(*p))
         {
             _num = (_num * 10) + (*p++ - '0');
         }
@@ -206,11 +212,11 @@ bool RTTTL::nextNote() {
 
     char *p = _songPtr;
     // if notes remain, play next note
-    if(*p)
+    if (*p)
     {
         // first, get note duration, if available
         _num = 0;
-        while(isdigit(*p))
+        while (isdigit(*p))
         {
             _num = (_num * 10) + (*p++ - '0');
         }
@@ -227,7 +233,7 @@ bool RTTTL::nextNote() {
         // not sure what I was doing here...
         // char reverseNote[] = {'p','c','C','d','D','e','f','F','g','G','a','A','b'};
 
-        switch(*p)
+        switch (*p)
         {
             case 'c': _note = 1;  break;
             case 'd': _note = 3;  break;
@@ -242,7 +248,7 @@ bool RTTTL::nextNote() {
         p++;
 
         // now, get optional '#' sharp
-        if(*p == '#')
+        if (*p == '#')
         {
             _note++;
             p++;
@@ -250,14 +256,14 @@ bool RTTTL::nextNote() {
 
         // now, get optional '_' flat
         // not originally part of the RTTTL spec, added for convenience
-        if(*p == '_')
+        if (*p == '_')
         {
             _note--;
             p++;
         }
 
         // now, get optional '.' dotted note
-        if(*p == '.')
+        if (*p == '.')
         {
             _duration += _duration/2;
             p++;
@@ -265,14 +271,14 @@ bool RTTTL::nextNote() {
 
         // now, get optional '*' stared note (which adds 1/8th note)
         // not originally part of the RTTTL spec, added for convenience
-        if(*p == '*')
+        if (*p == '*')
         {
             _duration += _wholenote/8;
             p++;
         }
 
         // now, get scale
-        if(isdigit(*p))
+        if (isdigit(*p))
         {
             _scale = *p - '0';
             p++;
@@ -287,7 +293,7 @@ bool RTTTL::nextNote() {
         _scale -= _lower_offset;  // lower octave offset if specified in song
         _scale += _octave_offset; // raise or lower octave if specified by user at runtime
 
-        if(*p == ',') {
+        if (*p == ',') {
             p++;       // skip comma for next note (or we may be at the end)
         }
 
@@ -295,7 +301,7 @@ bool RTTTL::nextNote() {
         _songPtr = p;
 
         // now play the note
-        if(_note)
+        if (_note)
         {
             _noteIdx = ((_scale - 1) * 12) + _note;
             if (_noteIdx < 1) {
